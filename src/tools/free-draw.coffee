@@ -21,9 +21,7 @@ class FreeDrawTool extends Tool
   onInitialMove: (e) ->
     super
     {x, y} = @coords e
-
     @mark.relPath.push [@xDiff(x), @yDiff(y)]
-
     @mark.set {startingPoint: @mark.startingPoint, relPath: @mark.relPath}
     @render()
 
@@ -31,12 +29,11 @@ class FreeDrawTool extends Tool
     super
     @path.attr {fill: @fill}
     @render()
+    @destroy() if @mark.relPath.length is 1 #don't record single clicks
 
-  xDiff: (x) ->
-    x - (@mark.startingPoint[0] + (p[0] for p in @mark.relPath).reduce (acc, p) -> acc + p)
+  xDiff: (x) -> x - @xPathCoord()
 
-  yDiff: (y) ->
-    y - (@mark.startingPoint[1] + (p[1] for p in @mark.relPath).reduce (acc, p) -> acc + p)
+  yDiff: (y) -> y - @yPathCoord()
 
   startMove: (e) =>
     {x, y} = @coords e
@@ -45,7 +42,6 @@ class FreeDrawTool extends Tool
 
   moveMark: (e) =>
     {x, y} = @coords e
-
     @mark.startingPoint = [x - @xOffset, y - @yOffset]
     @mark.set {startingPoint: @mark.startingPoint}
 
@@ -53,9 +49,29 @@ class FreeDrawTool extends Tool
     super
     if @mark.relPath.length > 1
       @path.attr {d: @pathDescription()}
+      @controls?.moveTo {x: @maxX(), y: @maxY()}
 
   pathDescription: ->
     "m #{@mark.startingPoint}, #{@mark.relPath.join(',')} #{if @isComplete() then ' Z' else ''}"
+
+  xPathCoord: (index = @mark.relPath.length-1) ->
+    # x coord at index or last point in relPath
+    @mark.startingPoint[0] + (p[0] for p in @mark.relPath[0..index]).reduce (acc, p) -> acc + p
+
+  yPathCoord: (index = @mark.relPath.length-1) ->
+    # y coord at index or last point in relPath
+    @mark.startingPoint[1] + (p[1] for p in @mark.relPath[0..index]).reduce (acc, p) -> acc + p
+
+  maxX: -> Math.max (p[0] for p in @_coordsOfPath())...
+
+  maxY: -> Math.max (p[1] for p in @_coordsOfPath())...
+
+  _coordsOfPath: ->
+    coords = []
+    for point in @mark.relPath
+      index = @mark.relPath.indexOf(point)
+      coords.push [@xPathCoord(index), @yPathCoord(index)]
+    coords
 
 window?.MarkingSurface.FreeDrawTool = FreeDrawTool
 module?.exports = FreeDrawTool
