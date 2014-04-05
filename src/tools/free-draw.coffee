@@ -56,22 +56,18 @@ class FreeDrawTool extends Tool
 
   xPathCoord: (index = @mark.relPath.length-1) ->
     # x coord at index or last point in relPath
-    @mark.startingPoint[0] + (p[0] for p in @mark.relPath[0..index]).reduce (acc, p) -> acc + p
+    @mark.startingPoint[0] + (p[0] for p in @mark.relPath[0..index]).reduce (acc, x) -> acc + x
 
   yPathCoord: (index = @mark.relPath.length-1) ->
     # y coord at index or last point in relPath
-    @mark.startingPoint[1] + (p[1] for p in @mark.relPath[0..index]).reduce (acc, p) -> acc + p
+    @mark.startingPoint[1] + (p[1] for p in @mark.relPath[0..index]).reduce (acc, y) -> acc + y
 
   maxX: -> Math.max (p[0] for p in @_coordsOfPath())...
 
   maxY: -> Math.max (p[1] for p in @_coordsOfPath())...
 
   _coordsOfPath: ->
-    coords = []
-    for point in @mark.relPath
-      index = @mark.relPath.indexOf(point)
-      coords.push [@xPathCoord(index), @yPathCoord(index)]
-    coords
+    ([@xPathCoord(i), @yPathCoord(i)] for point, i in @mark.relPath)
 
 window?.MarkingSurface.FreeDrawTool = FreeDrawTool
 module?.exports = FreeDrawTool
