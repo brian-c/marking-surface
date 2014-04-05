@@ -1,5 +1,5 @@
 MarkingSurface = window.MarkingSurface
-{Tool, PointTool, RectangleTool, EllipseTool, AxesTool, TranscriptionTool, MagnifierPointTool, DefaultToolControls} = MarkingSurface
+{Tool, PointTool, RectangleTool, EllipseTool, AxesTool, TranscriptionTool, MagnifierPointTool, DefaultToolControls, FreeDrawTool} = MarkingSurface
 
 EllipseTool.Controls = DefaultToolControls
 AxesTool.Controls = DefaultToolControls
@@ -17,6 +17,7 @@ TOOLS =
   axes: AxesTool
   transcription: TranscriptionTool
   magnifier: MagnifierPointTool
+  freedraw: FreeDrawTool
 
 DEMO_IMAGE = './fish.jpg'
 
